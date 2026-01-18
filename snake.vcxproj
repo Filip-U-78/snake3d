@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Lib\GLM;C:\Lib\glad\include;C:\Lib\glfw-3.4.bin.WIN64\include;C:\Lib\glfw-3.4.bin.WIN64;C:\Lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Lib\imgui-master\backends;C:\Lib\imgui-master;C:\Lib\GLM;C:\Lib\glad\include;C:\Lib\glfw-3.4.bin.WIN64\include;C:\Lib\glfw-3.4.bin.WIN64;C:\Lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,12 +129,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Lib\glad\src\glad.c" />
+    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui.cpp" />
+    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui_draw.cpp" />
+    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui_tables.cpp" />
+    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\OrbitCamera.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imconfig.h" />
+    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imgui.h" />
+    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imgui_internal.h" />
     <ClInclude Include="include\OrbitCamera.h" />
   </ItemGroup>
   <ItemGroup>
