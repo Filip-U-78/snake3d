@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\filip\OneDrive\Pulpit\snake_kopia\src\external;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include\imgui;C:\Users\filip\OneDrive\Pulpit\snake_kopia\assets\glfw-3.4.bin.WIN64\lib-vc2022;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include;C:\Lib\imgui-master\backends;C:\Lib\imgui-master;C:\Lib\GLM;C:\Lib\glad\include;C:\Lib\glfw-3.4.bin.WIN64\include;C:\Lib\glfw-3.4.bin.WIN64;C:\Lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\filip\OneDrive\Pulpit\snake_kopia\include\glad;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include\gml\GLM;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include\stb;C:\Users\filip\OneDrive\Pulpit\snake_kopia\src\external;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include\imgui;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +148,7 @@
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\GameUI.h" />
     <ClInclude Include="include\glad\glad.h" />
+    <ClInclude Include="include\glad\KHR\khrplatform.h" />
     <ClInclude Include="include\glfw\glfw3.h" />
     <ClInclude Include="include\glfw\glfw3native.h" />
     <ClInclude Include="include\imgui\imconfig.h" />
@@ -158,11 +159,13 @@
     <ClInclude Include="include\imgui\imgui_internal.h" />
     <ClInclude Include="include\imgui\imstb_rectpack.h" />
     <ClInclude Include="include\imgui\imstb_textedit.h" />
+    <ClInclude Include="include\imgui\imstb_truetype.h" />
     <ClInclude Include="include\Logic.h" />
     <ClInclude Include="include\OrbitCamera.h" />
     <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\Shared.h" />
+    <ClInclude Include="include\stb\stb_image.h" />
     <ClInclude Include="include\TextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
