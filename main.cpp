@@ -1,5 +1,4 @@
-﻿// main.cpp (zmodyfikowany)
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 #include <random>
 #include <algorithm>
@@ -11,13 +10,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-// NAGŁÓWKI ImGui
+// --- DODANO STB_IMAGE ---
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h" // Upewnij się, że ścieżka jest poprawna
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
 #include "include/Shader.h"
 #include "include/OrbitCamera.h"
+#include <filesystem>
 
 // --- LOGIKA STANÓW GRY ---
 enum class GameState { Menu, Game, Settings, GameOver };
@@ -31,6 +34,23 @@ struct SnakeSegment {
 struct Apple {
     glm::ivec3 position;
 };
+struct UV {
+    float u0, v0;
+    float u1, v1;
+};
+
+UV atlasUV(int col, int row, int cols, int rows) {
+    float w = 1.0f / cols;
+    float h = 1.0f / rows;
+
+    return {
+        col * w,
+        1.0f - (row + 1) * h,
+        (col + 1) * w,
+        1.0f - row * h
+    };
+}
+
 
 enum class TurnAction { None, PitchUp, PitchDown, YawLeft, YawRight };
 
@@ -46,7 +66,7 @@ float moveTimer = 0.0f;
 float moveInterval = 0.2f;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-int finalScore = 0; // Zmienna do przechowywania wyniku końcowego
+int finalScore = 0;
 
 std::vector<Apple> apples;
 int maxApples = 3;
@@ -54,8 +74,45 @@ int maxApples = 3;
 std::random_device rd;
 std::mt19937 rng(rd());
 
-// Kamera (używamy OrbitCamera, która obsługuje 3 tryby)
 OrbitCamera camera(3.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+// --- FUNKCJA WCZYTUJĄCA TEKSTURY ---
+unsigned int loadTexture(char const* path)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    stbi_set_flip_vertically_on_load(true); // Odwracamy oś Y obrazka dla OpenGL
+    unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format = GL_RGB;
+        if (nrComponents == 1) format = GL_RED;
+        else if (nrComponents == 3) format = GL_RGB;
+        else if (nrComponents == 4) format = GL_RGBA;
+
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        // Powtarzanie tekstury i filtrowanie
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
+
+    return textureID;
+}
 
 // --- FUNKCJE POMOCNICZE ---
 static glm::ivec3 randomGridPos() {
@@ -121,7 +178,8 @@ static glm::mat4 rotationFromForwardUp(const glm::ivec3& forward, const glm::ive
 }
 
 void drawSnakeSegment(const glm::ivec3& pos, const glm::ivec3& f, const glm::ivec3& u, bool isHead,
-    Shader& shader, unsigned int VAO, const glm::mat4& view, const glm::mat4& projection) {
+    Shader& shader, unsigned int VAO, unsigned int snakeTex, const glm::mat4& view, const glm::mat4& projection) {
+
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(pos) * (1.0f / 13.0f));
     model *= rotationFromForwardUp(f, u);
     model = glm::scale(model, glm::vec3(1.0f / 13.0f));
@@ -129,36 +187,45 @@ void drawSnakeSegment(const glm::ivec3& pos, const glm::ivec3& f, const glm::ive
     glm::mat4 mvp = projection * view * model;
     shader.setMat4("MVP", mvp);
 
+    // Włączamy teksturowanie
+    shader.setBool("useTexture", true);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, snakeTex);
+
     glBindVertexArray(VAO);
     if (isHead) {
-        shader.setVec4("color", glm::vec4(0.2f, 0.4f, 1.0f, 1.0f)); glDrawArrays(GL_TRIANGLES, 0, 6);
-        shader.setVec4("color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)); glDrawArrays(GL_TRIANGLES, 6, 30);
+        // Głowę barwimy lekko na niebiesko, ale używając tekstury
+        shader.setVec4("color", glm::vec4(0.8f, 0.8f, 1.0f, 1.0f));
+        glDrawArrays(GL_TRIANGLES, 0, 36);
     }
     else {
-        shader.setVec4("color", glm::vec4(0.0f, 0.8f, 0.2f, 1.0f)); glDrawArrays(GL_TRIANGLES, 0, 36);
+        // Ciało: biały kolor = oryginalny kolor tekstury
+        shader.setVec4("color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+        glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 }
 
-void drawApple(const glm::ivec3& pos, Shader& shader, unsigned int VAO, const glm::mat4& view, const glm::mat4& projection) {
+void drawApple(const glm::ivec3& pos, Shader& shader, unsigned int VAO, unsigned int appleTex, const glm::mat4& view, const glm::mat4& projection) {
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(pos) * (1.0f / 13.0f));
     model = glm::scale(model, glm::vec3(1.0f / 13.0f));
 
     glm::mat4 mvp = projection * view * model;
     shader.setMat4("MVP", mvp);
 
-    shader.setVec4("color", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    shader.setBool("useTexture", true);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, appleTex);
+
+    // Jabłko bez tintu (oryginalna tekstura)
+    shader.setVec4("color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
-void drawBoundaryGrid(
-    Shader& shader,
-    const glm::mat4& view,
-    const glm::mat4& projection
-) {
+
+void drawBoundaryGrid(Shader& shader, const glm::mat4& view, const glm::mat4& projection) {
     constexpr float B = 6.0f;
     constexpr float S = 1.0f / 13.0f;
 
-    // 12 krawędzi sześcianu
     glm::vec3 edges[] = {
         {-B,-B,-B},{ B,-B,-B}, { B,-B,-B},{ B, B,-B}, { B, B,-B},{-B, B,-B}, {-B, B,-B},{-B,-B,-B},
         {-B,-B, B},{ B,-B, B}, { B,-B, B},{ B, B, B}, { B, B, B},{-B, B, B}, {-B, B, B},{-B,-B, B},
@@ -176,19 +243,20 @@ void drawBoundaryGrid(
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
     glEnableVertexAttribArray(0);
+    // Tutaj NIE włączamy atrybutu 1 (tekstur), bo siatka ich nie ma
 
     glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(S));
     glm::mat4 mvp = projection * view * model;
 
     shader.use();
     shader.setMat4("MVP", mvp);
-    shader.setVec4("color", glm::vec4(0.6f, 0.8f, 1.0f, 0.25f)); // półprzezroczysta siatka
+    shader.setBool("useTexture", false); // Wyłącz tekstury dla siatki
+    shader.setVec4("color", glm::vec4(0.6f, 0.8f, 1.0f, 0.25f));
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glLineWidth(1.5f);
 
-    glBindVertexArray(VAO);
     glDrawArrays(GL_LINES, 0, 24);
 
     glLineWidth(1.0f);
@@ -198,17 +266,13 @@ void drawBoundaryGrid(
     glDeleteVertexArrays(1, &VAO);
 }
 
-
-
-
-
 int main() {
     if (!glfwInit()) return -1;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(1000, 800, "Snake 3D Extreme", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1000, 800, "Snake 3D Textures", NULL, NULL);
     if (!window) { glfwTerminate(); return -1; }
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -223,26 +287,76 @@ int main() {
     ImGui::StyleColorsDark();
 
     Shader shader("shaders/basic.vert", "shaders/basic.frag");
+    shader.use();
+    shader.setInt("ourTexture", 0);
 
+
+    // NOWA TABLICA WIERZCHOŁKÓW: [x,y,z, u,v]
     float cubeVertices[] = {
-        -0.5f,-0.5f, 0.5f,  0.5f,-0.5f, 0.5f,  0.5f, 0.5f, 0.5f,  0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f,-0.5f, 0.5f,
-        -0.5f,-0.5f,-0.5f, -0.5f, 0.5f,-0.5f,  0.5f, 0.5f,-0.5f,  0.5f, 0.5f,-0.5f,  0.5f,-0.5f,-0.5f, -0.5f,-0.5f,-0.5f,
-        -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,-0.5f, -0.5f,-0.5f,-0.5f, -0.5f,-0.5f,-0.5f, -0.5f,-0.5f, 0.5f, -0.5f, 0.5f, 0.5f,
-         0.5f, 0.5f, 0.5f,  0.5f,-0.5f, 0.5f,  0.5f,-0.5f,-0.5f,  0.5f,-0.5f,-0.5f,  0.5f, 0.5f,-0.5f,  0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,  0.5f, 0.5f, 0.5f,  0.5f, 0.5f,-0.5f,  0.5f, 0.5f,-0.5f, -0.5f, 0.5f,-0.5f, -0.5f, 0.5f, 0.5f,
-        -0.5f,-0.5f, 0.5f, -0.5f,-0.5f,-0.5f,  0.5f,-0.5f,-0.5f,  0.5f,-0.5f,-0.5f,  0.5f,-0.5f, 0.5f, -0.5f,-0.5f, 0.5f
+        // positions          // texture Coords
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
     unsigned int VAO, VBO;
     glGenVertexArrays(1, &VAO); glGenBuffers(1, &VBO);
     glBindVertexArray(VAO); glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    // Atr 0: Pozycja (3 floaty)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    // Atr 1: Tekstura UV (2 floaty) - offset to 3 * float
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    // WCZYTYWANIE TEKSTUR
+    unsigned int snakeTexture = loadTexture("snake.jpg");
+    unsigned int appleTexture = loadTexture("apple.jpg");
+
+    shader.use();
+    shader.setInt("ourTexture", 0); // Ustawiamy sampler na slot 0
 
     resetGame();
-
-    // ImGui: nazwy trybów (po polsku / krótkie)
     const char* camModes[] = { "Orbit (myszka)", "Pierwsza osoba (FPP)", "Podążająca (TPP)" };
 
     while (!glfwWindowShouldClose(window)) {
@@ -260,12 +374,10 @@ int main() {
 
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)io.DisplaySize.x / (float)io.DisplaySize.y, 0.1f, 100.0f);
 
-        // --- zmiana: obliczamy view przekazując dane głowy węża ---
         glm::vec3 headPos = glm::vec3(snake[0].position) * (1.0f / 13.0f);
         glm::vec3 headDir = glm::vec3(snakeDir);
         glm::vec3 headUp = glm::vec3(snakeUp);
         glm::mat4 view = camera.GetViewMatrix(headPos, headDir, headUp);
-        // ----------------------------------------------------------------
 
         if (currentState == GameState::Menu) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -281,19 +393,13 @@ int main() {
         else if (currentState == GameState::Settings) {
             ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
             ImGui::Begin("Ustawienia", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-
             ImGui::SliderFloat("Predkosc", &moveInterval, 0.05f, 0.5f);
             if (ImGui::SliderInt("Liczba jablek", &maxApples, 1, 10)) { spawnApplesAsNeeded(); }
-
             ImGui::Separator();
-
-            // --- DODANE: wybór trybu kamery ---
-            int modeInt = static_cast<int>(camera.Mode); // odczyt obecnego trybu
+            int modeInt = static_cast<int>(camera.Mode);
             if (ImGui::Combo("Tryb kamery", &modeInt, camModes, IM_ARRAYSIZE(camModes))) {
                 camera.SetMode(static_cast<CameraMode>(modeInt));
             }
-            // ------------------------------------------------
-
             ImGui::Separator();
             if (ImGui::Button("POWROT", ImVec2(120, 30))) currentState = GameState::Menu;
             ImGui::End();
@@ -302,18 +408,11 @@ int main() {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
             ImGui::Begin("Game Over", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
-
             ImGui::TextColored(ImVec4(1, 0, 0, 1), "KONIEC GRY!");
             ImGui::Text("Twoj wynik: %d", finalScore);
             ImGui::Separator();
-
-            if (ImGui::Button("ZAGRAJ PONOWNIE", ImVec2(220, 45))) {
-                resetGame();
-                currentState = GameState::Game;
-            }
-            if (ImGui::Button("MENU GLOWNE", ImVec2(220, 45))) {
-                currentState = GameState::Menu;
-            }
+            if (ImGui::Button("ZAGRAJ PONOWNIE", ImVec2(220, 45))) { resetGame(); currentState = GameState::Game; }
+            if (ImGui::Button("MENU GLOWNE", ImVec2(220, 45))) currentState = GameState::Menu;
             ImGui::End();
         }
         else if (currentState == GameState::Game) {
@@ -326,7 +425,6 @@ int main() {
             ImGui::Text("PUNKTY: %d", (int)snake.size() - 1);
             ImGui::End();
 
-            // Logika sterowania
             if (canChangeDir) {
                 TurnAction action = TurnAction::None;
                 if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) action = TurnAction::PitchUp;
@@ -340,7 +438,6 @@ int main() {
                 }
             }
 
-            // Logika ruchu
             moveTimer += deltaTime;
             if (moveTimer >= moveInterval) {
                 moveTimer = 0.0f;
@@ -349,7 +446,6 @@ int main() {
                 for (int i = (int)snake.size() - 1; i >= 1; --i) snake[i].position = snake[i - 1].position;
                 snake[0].position += snakeDir;
 
-                // Sprawdzenie kolizji (ZAMIANA NA GameState::GameOver)
                 bool dead = false;
                 if (std::abs(snake[0].position.x) > 6 || std::abs(snake[0].position.y) > 6 || std::abs(snake[0].position.z) > 6) dead = true;
                 for (size_t i = 1; i < snake.size(); ++i) if (snake[i].position == snake[0].position) dead = true;
@@ -368,18 +464,17 @@ int main() {
                 canChangeDir = true;
             }
 
-            // Renderowanie 3D
+            // Renderowanie
             shader.use();
-            glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); glDepthMask(GL_FALSE);
-            shader.setMat4("MVP", projection * view * glm::mat4(1.0f));
-            shader.setVec4("color", glm::vec4(1, 1, 1, 0.03f));
-            glBindVertexArray(VAO); glDrawArrays(GL_TRIANGLES, 0, 36);
-            glDepthMask(GL_TRUE); glDisable(GL_BLEND);
+            glDepthMask(GL_FALSE);
             drawBoundaryGrid(shader, view, projection);
+            glDepthMask(GL_TRUE);
 
+            for (const auto& app : apples)
+                drawApple(app.position, shader, VAO, appleTexture, view, projection);
 
-            for (const auto& app : apples) drawApple(app.position, shader, VAO, view, projection);
-            for (size_t i = 0; i < snake.size(); ++i) drawSnakeSegment(snake[i].position, snakeDir, snakeUp, (i == 0), shader, VAO, view, projection);
+            for (size_t i = 0; i < snake.size(); ++i)
+                drawSnakeSegment(snake[i].position, snakeDir, snakeUp, (i == 0), shader, VAO, snakeTexture, view, projection);
         }
 
         ImGui::Render();

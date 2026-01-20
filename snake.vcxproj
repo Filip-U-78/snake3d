@@ -146,6 +146,7 @@
     <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imconfig.h" />
     <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imgui.h" />
     <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imgui_internal.h" />
+    <ClInclude Include="..\..\..\Downloads\stb_image.h" />
     <ClInclude Include="include\OrbitCamera.h" />
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +156,10 @@
     <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.lib" />
     <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3dll.lib" />
     <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3_mt.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Downloads\apple.jpg" />
+    <Image Include="..\..\..\Downloads\snake.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

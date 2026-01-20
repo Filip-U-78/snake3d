@@ -68,6 +68,9 @@
     <ClInclude Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_opengl3_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Downloads\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.dll" />
@@ -76,5 +79,13 @@
     <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.lib" />
     <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3_mt.lib" />
     <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3dll.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Downloads\snake.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\Downloads\apple.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
