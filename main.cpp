@@ -1,4 +1,5 @@
-﻿#include <iostream>
+﻿// main.cpp (zmodyfikowany)
+#include <iostream>
 #include <vector>
 #include <random>
 #include <algorithm>
@@ -53,6 +54,7 @@ int maxApples = 3;
 std::random_device rd;
 std::mt19937 rng(rd());
 
+// Kamera (używamy OrbitCamera, która obsługuje 3 tryby)
 OrbitCamera camera(3.0f, glm::vec3(0.0f, 0.0f, 0.0f));
 
 // --- FUNKCJE POMOCNICZE ---
@@ -104,7 +106,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     static float lastX = 400, lastY = 300;
     static bool firstMouse = true;
     if (firstMouse) { lastX = (float)xpos; lastY = (float)ypos; firstMouse = false; }
-    camera.ProcessMouseMovement((float)xpos - lastX, (float)lastY - ypos);
+    camera.ProcessMouseMovement((float)xpos - lastX, (float)lastY - (float)ypos);
     lastX = (float)xpos; lastY = (float)ypos;
 }
 
@@ -148,6 +150,57 @@ void drawApple(const glm::ivec3& pos, Shader& shader, unsigned int VAO, const gl
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
+void drawBoundaryGrid(
+    Shader& shader,
+    const glm::mat4& view,
+    const glm::mat4& projection
+) {
+    constexpr float B = 6.0f;
+    constexpr float S = 1.0f / 13.0f;
+
+    // 12 krawędzi sześcianu
+    glm::vec3 edges[] = {
+        {-B,-B,-B},{ B,-B,-B}, { B,-B,-B},{ B, B,-B}, { B, B,-B},{-B, B,-B}, {-B, B,-B},{-B,-B,-B},
+        {-B,-B, B},{ B,-B, B}, { B,-B, B},{ B, B, B}, { B, B, B},{-B, B, B}, {-B, B, B},{-B,-B, B},
+        {-B,-B,-B},{-B,-B, B}, { B,-B,-B},{ B,-B, B},
+        { B, B,-B},{ B, B, B}, {-B, B,-B},{-B, B, B}
+    };
+
+    unsigned int VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(edges), edges, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(S));
+    glm::mat4 mvp = projection * view * model;
+
+    shader.use();
+    shader.setMat4("MVP", mvp);
+    shader.setVec4("color", glm::vec4(0.6f, 0.8f, 1.0f, 0.25f)); // półprzezroczysta siatka
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glLineWidth(1.5f);
+
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_LINES, 0, 24);
+
+    glLineWidth(1.0f);
+    glDisable(GL_BLEND);
+
+    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &VAO);
+}
+
+
+
+
 
 int main() {
     if (!glfwInit()) return -1;
@@ -189,9 +242,13 @@ int main() {
 
     resetGame();
 
+    // ImGui: nazwy trybów (po polsku / krótkie)
+    const char* camModes[] = { "Orbit (myszka)", "Pierwsza osoba (FPP)", "Podążająca (TPP)" };
+
     while (!glfwWindowShouldClose(window)) {
         float time = (float)glfwGetTime();
         deltaTime = time - lastFrame; lastFrame = time;
+        camera.SetDeltaTime(deltaTime);
         glfwPollEvents();
 
         ImGui_ImplOpenGL3_NewFrame();
@@ -202,7 +259,13 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)io.DisplaySize.x / (float)io.DisplaySize.y, 0.1f, 100.0f);
-        glm::mat4 view = camera.GetViewMatrix();
+
+        // --- zmiana: obliczamy view przekazując dane głowy węża ---
+        glm::vec3 headPos = glm::vec3(snake[0].position) * (1.0f / 13.0f);
+        glm::vec3 headDir = glm::vec3(snakeDir);
+        glm::vec3 headUp = glm::vec3(snakeUp);
+        glm::mat4 view = camera.GetViewMatrix(headPos, headDir, headUp);
+        // ----------------------------------------------------------------
 
         if (currentState == GameState::Menu) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -218,8 +281,19 @@ int main() {
         else if (currentState == GameState::Settings) {
             ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
             ImGui::Begin("Ustawienia", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
             ImGui::SliderFloat("Predkosc", &moveInterval, 0.05f, 0.5f);
             if (ImGui::SliderInt("Liczba jablek", &maxApples, 1, 10)) { spawnApplesAsNeeded(); }
+
+            ImGui::Separator();
+
+            // --- DODANE: wybór trybu kamery ---
+            int modeInt = static_cast<int>(camera.Mode); // odczyt obecnego trybu
+            if (ImGui::Combo("Tryb kamery", &modeInt, camModes, IM_ARRAYSIZE(camModes))) {
+                camera.SetMode(static_cast<CameraMode>(modeInt));
+            }
+            // ------------------------------------------------
+
             ImGui::Separator();
             if (ImGui::Button("POWROT", ImVec2(120, 30))) currentState = GameState::Menu;
             ImGui::End();
@@ -301,6 +375,8 @@ int main() {
             shader.setVec4("color", glm::vec4(1, 1, 1, 0.03f));
             glBindVertexArray(VAO); glDrawArrays(GL_TRIANGLES, 0, 36);
             glDepthMask(GL_TRUE); glDisable(GL_BLEND);
+            drawBoundaryGrid(shader, view, projection);
+
 
             for (const auto& app : apples) drawApple(app.position, shader, VAO, view, projection);
             for (size_t i = 0; i < snake.size(); ++i) drawSnakeSegment(snake[i].position, snakeDir, snakeUp, (i == 0), shader, VAO, view, projection);
