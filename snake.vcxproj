@@ -148,12 +148,16 @@
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\GameUI.h" />
     <ClInclude Include="include\glad\glad.h" />
+    <ClInclude Include="include\glfw\glfw3.h" />
+    <ClInclude Include="include\glfw\glfw3native.h" />
     <ClInclude Include="include\imgui\imconfig.h" />
     <ClInclude Include="include\imgui\imgui.h" />
     <ClInclude Include="include\imgui\imgui_impl_glfw.h" />
     <ClInclude Include="include\imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="include\imgui\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="include\imgui\imgui_internal.h" />
+    <ClInclude Include="include\imgui\imstb_rectpack.h" />
+    <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\Logic.h" />
     <ClInclude Include="include\OrbitCamera.h" />
     <ClInclude Include="include\Renderer.h" />
