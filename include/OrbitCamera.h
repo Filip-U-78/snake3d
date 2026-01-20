@@ -2,11 +2,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-enum class CameraMode {
-    Orbit = 0,
-    FirstPerson = 1,
-    Follow = 2
-};
+enum class CameraMode { Orbit, TPP };
 
 class OrbitCamera {
 public:

@@ -15,34 +15,49 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\OrbitCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Lib\glad\src\glad.c">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui.cpp">
+    <ClCompile Include="src\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui_draw.cpp">
+    <ClCompile Include="src\external\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui_tables.cpp">
+    <ClCompile Include="src\external\imgui_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui_widgets.cpp">
+    <ClCompile Include="src\external\imgui_impl_glfw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_glfw.cpp">
+    <ClCompile Include="src\external\imgui_impl_opengl3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_opengl3.cpp">
+    <ClCompile Include="src\external\imgui_tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\external\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glad\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Logic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,30 +65,60 @@
     <ClInclude Include="include\OrbitCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_glfw.h">
+    <ClInclude Include="include\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_opengl3.h">
+    <ClInclude Include="include\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imconfig.h">
+    <ClInclude Include="include\imgui\imconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imgui.h">
+    <ClInclude Include="include\imgui\imgui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imgui_internal.h">
+    <ClInclude Include="include\imgui\imgui_impl_glfw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_opengl3_loader.h">
+    <ClInclude Include="include\imgui\imgui_impl_opengl3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Downloads\stb_image.h">
+    <ClInclude Include="include\imgui\imgui_impl_opengl3_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glad\glad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Shared.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Logic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="imgui.ini" />
     <None Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.dll" />
+    <None Include="shaders\basic.frag" />
+    <None Include="shaders\basic.vert" />
+    <None Include="x64\Debug\glfw3.dll" />
+    <None Include="x64\Debug\imgui.ini" />
+    <None Include="x64\Debug\snake.exe" />
+    <None Include="x64\Debug\snake.pdb" />
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.lib" />
@@ -81,10 +126,31 @@
     <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3dll.lib" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Downloads\snake.jpg">
+    <Image Include="textures\snake_body_down.JPG">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\..\Downloads\apple.jpg">
+    <Image Include="textures\snake_body_side.JPG">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\snake_body_up.JPG">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\snake_head_front.JPG">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\snake_head_side.JPG">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\snake_head_up.JPG">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\apple_up.JPG">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\apple_side.JPG">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\apple_down.JPG">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

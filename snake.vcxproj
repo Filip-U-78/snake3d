@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Lib\imgui-master\backends;C:\Lib\imgui-master;C:\Lib\GLM;C:\Lib\glad\include;C:\Lib\glfw-3.4.bin.WIN64\include;C:\Lib\glfw-3.4.bin.WIN64;C:\Lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\filip\OneDrive\Pulpit\snake_kopia\src\external;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include\imgui;C:\Users\filip\OneDrive\Pulpit\snake_kopia\assets\glfw-3.4.bin.WIN64\lib-vc2022;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include;C:\Lib\imgui-master\backends;C:\Lib\imgui-master;C:\Lib\GLM;C:\Lib\glad\include;C:\Lib\glfw-3.4.bin.WIN64\include;C:\Lib\glfw-3.4.bin.WIN64;C:\Lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,29 +128,50 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Lib\glad\src\glad.c" />
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui.cpp" />
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui_draw.cpp" />
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui_tables.cpp" />
-    <ClCompile Include="..\..\..\..\..\Lib\imgui-master\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\external\imgui.cpp" />
+    <ClCompile Include="src\external\imgui_draw.cpp" />
+    <ClCompile Include="src\external\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\external\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\external\imgui_tables.cpp" />
+    <ClCompile Include="src\external\imgui_widgets.cpp" />
+    <ClCompile Include="src\GameUI.cpp" />
+    <ClCompile Include="src\glad\glad.c" />
+    <ClCompile Include="src\Logic.cpp" />
     <ClCompile Include="src\OrbitCamera.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_glfw.h" />
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_opengl3.h" />
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\backends\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imconfig.h" />
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imgui.h" />
-    <ClInclude Include="..\..\..\..\..\Lib\imgui-master\imgui_internal.h" />
-    <ClInclude Include="..\..\..\Downloads\stb_image.h" />
+    <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\GameUI.h" />
+    <ClInclude Include="include\glad\glad.h" />
+    <ClInclude Include="include\imgui\imconfig.h" />
+    <ClInclude Include="include\imgui\imgui.h" />
+    <ClInclude Include="include\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="include\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="include\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="include\imgui\imgui_internal.h" />
+    <ClInclude Include="include\Logic.h" />
     <ClInclude Include="include\OrbitCamera.h" />
+    <ClInclude Include="include\Renderer.h" />
+    <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\Shared.h" />
+    <ClInclude Include="include\TextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.dll" />
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+    <None Include="imgui.ini" />
+    <None Include="shaders\basic.frag" />
+    <None Include="shaders\basic.vert" />
+    <None Include="x64\Debug\glfw3.dll" />
+    <None Include="x64\Debug\imgui.ini" />
+    <None Include="x64\Debug\snake.exe" />
+    <None Include="x64\Debug\snake.pdb" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.lib" />
@@ -158,8 +179,15 @@
     <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3_mt.lib" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Downloads\apple.jpg" />
-    <Image Include="..\..\..\Downloads\snake.jpg" />
+    <Image Include="textures\apple_down.JPG" />
+    <Image Include="textures\apple_side.JPG" />
+    <Image Include="textures\apple_up.JPG" />
+    <Image Include="textures\snake_body_down.JPG" />
+    <Image Include="textures\snake_body_side.JPG" />
+    <Image Include="textures\snake_body_up.JPG" />
+    <Image Include="textures\snake_head_front.JPG" />
+    <Image Include="textures\snake_head_side.JPG" />
+    <Image Include="textures\snake_head_up.JPG" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
