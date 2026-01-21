@@ -1,5 +1,5 @@
 #include "../include/TextureLoader.h"
-#include <glad/glad.h>
+#include <glad.h>
 #include <iostream>
 
 #define STB_IMAGE_IMPLEMENTATION

@@ -131,7 +131,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui.ini" />
-    <None Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.dll" />
     <None Include="shaders\basic.frag" />
     <None Include="shaders\basic.vert" />
     <None Include="x64\Debug\glfw3.dll" />
@@ -140,11 +139,6 @@
     <None Include="x64\Debug\snake.pdb" />
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.lib" />
-    <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3_mt.lib" />
-    <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3dll.lib" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\snake_body_down.JPG">

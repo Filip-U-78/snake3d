@@ -3,8 +3,8 @@
 #include <random>
 #include <string>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <glad.h>
+#include <glfw3.h>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -111,12 +111,12 @@ int main() {
     appleTex.faces[4] = loadTexture("textures/apple_down.jpg");
     appleTex.faces[0] = appleTex.faces[1] = appleTex.faces[2] = appleTex.faces[3] = loadTexture("textures/apple_side.jpg");
 
-    headTex.faces[5] = loadTexture("textures/snake_head_up.jpg");
-    headTex.faces[4] = loadTexture("textures/snake_head_down.jpg");
-    headTex.faces[0] = loadTexture("textures/snake_head_front.jpg");
-    headTex.faces[1] = headTex.faces[2] = headTex.faces[3] = loadTexture("textures/snake_head_side.jpg");
+    headTex.faces[5] = loadTexture("textures/snake_body_side.jpg");
+    headTex.faces[4] = loadTexture("textures/snake_body_side.jpg");
+    headTex.faces[0] = loadTexture("textures/snake_body_side.jpg");
+    headTex.faces[1] = headTex.faces[2] = headTex.faces[3] = loadTexture("textures/snake_head_front.jpg");
 
-    bodyTex.faces[5] = loadTexture("textures/snake_body_up.jpg");
+    bodyTex.faces[5] = loadTexture("textures/snake_body_side.jpg");
     bodyTex.faces[4] = bodyTex.faces[0] = bodyTex.faces[1] = bodyTex.faces[2] = bodyTex.faces[3] = loadTexture("textures/snake_body_side.jpg");
 
     ResetGameWrapper();

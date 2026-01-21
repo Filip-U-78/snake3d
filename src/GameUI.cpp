@@ -1,6 +1,6 @@
 #include "../include/GameUI.h"
 #include "imgui.h"
-#include <GLFW/glfw3.h> // Potrzebne do zamykania okna
+#include <glfw3.h> // Potrzebne do zamykania okna
 
 void DrawMainMenu(GameState& currentState, std::function<void()> onStart) {
     // Pobieramy rozmiar ekranu, ¿eby wycentrowaæ okno

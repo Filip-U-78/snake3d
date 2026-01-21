@@ -1,5 +1,5 @@
 #include "../include/Renderer.h"
-#include <glad/glad.h>
+#include <glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
 

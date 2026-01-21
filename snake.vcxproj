@@ -104,11 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\filip\OneDrive\Pulpit\snake_kopia\include\glad;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include\gml\GLM;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include\stb;C:\Users\filip\OneDrive\Pulpit\snake_kopia\src\external;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include\imgui;C:\Users\filip\OneDrive\Pulpit\snake_kopia\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include;D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include\stb;D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include\imgui;D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include\glm;D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include\glfw;D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include\glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3dll.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -119,12 +121,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include;D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include\stb;D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include\imgui;D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include\glm;D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include\glfw;D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\include\glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3dll.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\G3DiPKG2_3_KRAWCZYK_KAMIL_KACZOR_MICHAŁ_KĘPA_JAKUB_ULANECKI_FILIP\source\snake3d\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -169,7 +174,6 @@
     <ClInclude Include="include\TextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.dll" />
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="imgui.ini" />
@@ -179,11 +183,6 @@
     <None Include="x64\Debug\imgui.ini" />
     <None Include="x64\Debug\snake.exe" />
     <None Include="x64\Debug\snake.pdb" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3.lib" />
-    <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3dll.lib" />
-    <Library Include="..\..\..\..\..\Lib\glfw-3.4.bin.WIN64\lib-vc2022\glfw3_mt.lib" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\apple_down.JPG" />
